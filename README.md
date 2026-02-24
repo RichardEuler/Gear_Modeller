@@ -50,5 +50,4 @@ The application features an intuitive graphical user interface.
 This project was built primarily for geometric acquisition and gear meshing simulation. While the core mathematical models are highly accurate, the software architecture may have room for optimization, with some bugs being still present within the application.
 Contributions, bug reports, and refactoring proposals are highly welcome! Feel free to open an issue or submit a pull request if you would like to improve the application.
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for more details.
+*This project is licensed under the MIT License. See the LICENSE file for more details.*
