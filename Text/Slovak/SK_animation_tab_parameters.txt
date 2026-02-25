@@ -1,0 +1,12 @@
+Ukážkové parametre
+Prevodové číslo
+Dĺžka dráhy záberu
+Súčiniteľ záberu profilu
+Typ korigovania
+2 - Pastorok
+3 - Ozubené koleso
+Priemer valivej kružnice
+Priemer rozstupovej kružnice
+Priemer základnej kružnice
+Priemer hlavovej kružnice
+Priemer pätnej kružnice

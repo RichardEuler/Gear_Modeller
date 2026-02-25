@@ -1,0 +1,6 @@
+Výber významných kružníc
+Aktivovať všetky významné kružnice
+Rozstupová kružnica
+Základná kružnica
+Hlavová kružnica
+Pätná kružnica

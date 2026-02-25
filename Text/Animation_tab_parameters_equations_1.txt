@@ -1,0 +1,10 @@
+$m \: \mathrm{[mm]}$
+$z \: \mathrm{[-]}$
+$x \: \mathrm{[-]}$
+$\alpha \: \mathrm{[^\circ]}$
+$\rho_e \: \mathrm{[mm]}$
+$\rho_h \: \mathrm{[mm]}$
+$j_b \: \mathrm{[\mu m]}$
+$\alpha_w \: \mathrm{[^\circ]}$
+$a_w \: \mathrm{[mm]}$
+$y \: \mathrm{[-]}$

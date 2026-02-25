@@ -1,0 +1,10 @@
+Ukázkové parametry  
+Jednotková výška přímkové části hlavy a paty zubu  
+Jednotková hlavová vůle  
+Výška paty zubu  
+Výška hlavy zubu  
+
+Průměr roztečné kružnice  
+Průměr základní kružnice  
+Průměr patní kružnice  
+Průměr hlavové kružnice  

@@ -1,0 +1,10 @@
+Ukážkové parametre
+Jednotková výška priamkovej časti hlavy a päty zuba
+Jednotková hlavová vôľa
+Výška päty zuba
+Výška hlavy zuba
+
+Priemer rozstupovej kružnice
+Priemer základnej kružnice
+Priemer pätnej kružnice
+Priemer hlavovej kružnice

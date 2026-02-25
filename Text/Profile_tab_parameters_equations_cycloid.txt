@@ -1,0 +1,8 @@
+$\kappa = 1$
+$c^* = 0.25$
+$h_f = \bigl( \kappa + c^* - x \bigr) m = ??? \, \mathrm{mm}$
+$h_a = \bigl( \kappa + x \bigr) m = ??? \, \mathrm{mm}$
+
+$d = d_b = zm = ??? \, \mathrm{mm}$
+$d_f = d - 2h_f = ??? \, \mathrm{mm}$
+$d_a = d + 2h_a = ??? \, \mathrm{mm}$

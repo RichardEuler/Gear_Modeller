@@ -1,0 +1,7 @@
+Výber grafických doplnkov
+Aktivovať všetky grafické doplnky
+Záberová čiara
+Rozstupová kružnica
+Základná kružnica
+Hlavová kružnica
+Pätná kružnica

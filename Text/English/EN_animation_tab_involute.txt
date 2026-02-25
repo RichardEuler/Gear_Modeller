@@ -1,0 +1,60 @@
+Animations  
+The module serves to simulate gear meshing and visualize kinematics in real time. However, during live display, it is not recommended to significantly increase the pinion speed or frame rate due to the risk of overload. In such cases, it is better to use the export function directly to achieve higher quality.
+Mode:
+Gear meshing, Gear generation
+Animation settings
+Pinion speed:
+Frame rate:
+Teeth:
+Thickness:
+Color:
+Tooth outline color
+Tooth fill color
+No fill
+Select fill color
+Transparency 0%
+Transparency 25%
+Transparency 50%
+Transparency 75%
+Transparency 100%
+Style:
+Solid, Dashed, Dotted, Dash-Dotted
+Graph:
+Grid
+Axes
+Show curves
+Gear settings
+Gear type:
+Involute
+Cycloidal
+Additional parameters
+Gears
+Pinion
+Wheel
+Mating gear
+Gear module
+Number of teeth
+Profile shift coefficient
+Profile angle
+Gear meshing
+Normal backlash
+Working pressure angle
+Working center distance
+Cent. dist. modification coefficient
+Export
+Options:
+Image
+Graphic type:
+Raster, Vector
+Format
+Coordinates
+Exporting saves the coordinates of two profiles\nof teeth in mesh into individual files
+Info
+Video
+Pitches
+Path:
+Enter file name
+EXPORT
+DISPLAY
+START, PAUSE
+DELETE

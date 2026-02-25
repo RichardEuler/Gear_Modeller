@@ -1,0 +1,12 @@
+Sample Parameters  
+Gear Ratio  
+Length of Path of Contact  
+Profile Contact Ratio  
+Correction Type  
+2 - Pinion  
+3 - Gear Wheel  
+Pitch Circle Diameter  
+Pitch Diameter  
+Base Circle Diameter  
+Addendum Circle Diameter  
+Dedendum Circle Diameter

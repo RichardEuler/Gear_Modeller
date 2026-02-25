@@ -1,0 +1,10 @@
+Sample Parameters  
+Unit Height of the Linear Part of the Tooth Head and Root  
+Unit Head Clearance  
+Root Height of the Tooth  
+Head Height of the Tooth  
+
+Pitch Circle Diameter  
+Base Circle Diameter  
+Root Circle Diameter  
+Head Circle Diameter

@@ -1,0 +1,43 @@
+Module allows the creation of tooth profiles (or their sequences) for involute and cycloidal gearing. The lock display function automatically centers all profiles to the origin for better visualization.
+Display Settings
+Generation Options:
+Individual Profile
+Parametric Sequence of Profiles
+Count
+Lock Display to Origin:
+Lines:
+Thickness:
+Color:
+Random Color Selection
+User Color Selection
+Style:
+Solid, Dashed, Dotted, Dash-Dotted
+Graph:
+Grid
+Axes
+Significant Circles
+Gear Settings
+Type of Gearing:
+Involute
+Cycloidal
+Additional Parameters
+Row 1
+Row 2
+Gear Module
+Number of Teeth
+Unit Shift
+Radius of the Generating Circle of the Hypocycloid
+Exporting
+Options:
+Image
+Type of Graphics:
+Raster, Vector
+Format
+Coordinates
+Profile Order:
+Path:
+Enter File Name
+EXPORT
+DISPLAY
+DELETE LAST
+DELETE ALL

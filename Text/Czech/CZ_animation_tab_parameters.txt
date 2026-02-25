@@ -1,0 +1,12 @@
+Ukázkové parametry  
+Převodové číslo  
+Délka dráhy záběru  
+Součinitel záběru profilu  
+Typ korigování  
+2 - Pastorek  
+3 - Ozubené kolo  
+Průměr valivé kružnice  
+Průměr roztečné kružnice  
+Průměr základní kružnice  
+Průměr hlavové kružnice  
+Průměr patní kružnice  
