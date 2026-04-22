@@ -1,4 +1,4 @@
-Command to start application: `Gear_model`
+Command to start application: `Gear_Model`
 
 # GEAR MODEL
 The application built in MATLAB serves as a tool for building the exact theoretical gear tooth geometry during the hobbing and MAAG shaping method manufacturing process.
