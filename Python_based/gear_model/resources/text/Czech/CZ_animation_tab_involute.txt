@@ -1,0 +1,60 @@
+Animace
+Modul slouží k simulaci záběru soukolí a vizualizaci kinematiky v reálném čase. Při živém zobrazení se však z důvodu rizika přetížení nedoporučuje výrazně zvyšovat otáčky pastorku či snímkovou frekvenci, proto je v takovém případě lepší využít přímo funkci exportování pro dosažení vyšší kvality.
+Režim:
+Záběr ozubení, Výroba ozubení odvalovacím způsobem
+Nastavení animace
+Otáčky pastorku:
+Snímková frekvence:
+Zuby:
+Tloušťka:
+Barva:
+Barva obrysu zubů
+Barva výplně zubů
+Bez výplně
+Vybrat barvu výplně
+Průhlednost 0%
+Průhlednost 25%
+Průhlednost 50%
+Průhlednost 75%
+Průhlednost 100%
+Styl:
+Plná, Přerušovaná, Tečkovaná, Čárkovaná
+Graf:
+Mřížka
+Osy
+Zobrazit křivky
+Nastavení ozubení
+Typ ozubení:
+Evolventní
+Cykloidní
+Dodatečné parametry
+Ozubená kola
+Pastorek
+Kolo
+Spoluzabírající kolo
+Modul Ozubení
+Počet zubů
+Jednotkové posunutí
+Úhel profilu
+Záběr ozubení
+Základní boční vůle
+Valivý úhel záběru
+Valivá osová vzdálenost
+Jednotkové přisunutí kol
+Exportování
+Možnosti:
+Obrázek
+Typ grafiky:
+Rastrová, Vektorová
+Formát
+Souřadnice
+Exportováním se uloží souřadnice dvou profilů\nzubů v záběru do jednotlivých souborů
+Info
+Video
+Rozestupy
+Cesta:
+Zadejte název souboru
+EXPORTOVAT
+ZOBRAZIT
+SPUSTIT, POZASTAVIT
+SMAZAT

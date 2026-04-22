@@ -1,0 +1,5 @@
+<div style="text-align: justify;"><b>Nástroj pro modelování a kinematickou simulaci ozubení</b><br><br>
+Tato aplikace byla vyvinuta v rámci akademického působení na Vysokém učení technickém v Brně (VUT), konkrétně během studia na Fakultě strojního inženýrství.<br><br>
+<b>Motivace projektu:</b>&thinsp; Hlavním cílem této práce bylo implementovat metodiku pro matematické generování profilů zubů přímo v prostředí MATLAB. Ačkoliv je MATLAB výkonným výpočetním nástrojem, standardně postrádá specializované funkce pro přesnou geometrickou konstrukci a kinematickou simulaci evolventního a cykloidního ozubení.<br><br>
+<b>Funkce:</b>&thinsp; Tento nástroj vyplňuje zmíněnou mezeru tím, že poskytuje parametrické prostředí pro návrh geometrie ozubení, simulaci výrobního procesu (odvalování) a vizualizaci záběrové přímky. Slouží tak jako návrhový nástroj i jako edukační platforma pro pochopení teorie ozubení.<br><br>
+V případě dotazů, technických připomínek nebo zájmu o spolupráci prosím kontaktovat na adresu: <i>Richard.Timko@vutbr.cz</i></div>

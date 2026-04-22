@@ -1,0 +1,5 @@
+<div style="text-align: justify;"><b>Gear Modeling and Kinematic Simulation Tool</b><br><br>
+This application was developed within the academic framework of the Brno University of Technology (BUT), specifically during the studies at the Faculty of Mechanical Engineering.<br><br>
+<b>Project Motivation:</b>&thinsp; The primary objective of this work was to implement a methodology for the mathematical generation of gear tooth profiles directly within the MATLAB environment. While MATLAB is a powerful computational tool, it lacks native, specialized functions for the precise geometric construction and kinematic simulation of involute and cycloidal toothing.<br><br>
+<b>Capabilities:</b>&thinsp; This tool bridges that gap by providing a parametric environment to model gear geometries, simulate the manufacturing process (hobbing), and visualize the line of action. It serves as both a design utility and an educational platform for understanding gear theory.<br><br>
+For inquiries, technical feedback, or collaboration interests, please contact: <i>Richard.Timko@vutbr.cz</i></div>

@@ -1,0 +1,13 @@
+$u = ?$
+$g_\alpha = ? \: \mathrm{mm}$
+$\varepsilon_\alpha = ?$
+$d_{w2} = ? \: \mathrm{mm}$
+$d_{w3} = ? \: \mathrm{mm}$
+$d_2 = ? \: \mathrm{mm}$
+$d_3 = ? \: \mathrm{mm}$
+$d_{b2} = ? \: \mathrm{mm}$
+$d_{b3} = ? \: \mathrm{mm}$
+$d_{a2} = ? \: \mathrm{mm}$
+$d_{a3} = ? \: \mathrm{mm}$
+$d_{f2} = ? \: \mathrm{mm}$
+$d_{f3} = ? \: \mathrm{mm}$

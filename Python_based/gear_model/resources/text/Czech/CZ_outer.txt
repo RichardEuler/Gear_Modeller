@@ -1,0 +1,5 @@
+Čekání na odezvu uživatele.
+Gear Model
+Grafický výstup aplikace
+Domů
+Model profilu zubu

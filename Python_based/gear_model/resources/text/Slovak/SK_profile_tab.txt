@@ -1,0 +1,44 @@
+Modul umožňuje tvorbu profilu zuba (príp. ich sekvenciu) pre evolventné a cykloidné ozubenie. Funkcia uzamknutia zobrazenia automaticky centruje všetky profily do počiatku pre lepšiu vizualizáciu.
+Nastavenie zobrazenia
+Možnosti generovania:
+Jednotlivý profil
+Parametrická sekvencia profilov
+Počet
+Uzamknutie zobrazenia do počiatku:
+Čiary:
+Hrúbka:
+Farba:
+Náhodný výber farby
+Užívateľský výber farby
+Štýl:
+Plná, Prerušovaná, Bodkovaná, Bodkočiarkovaná
+Graf:
+Mriežka
+Osi
+Významné kružnice
+Nastavenie ozubenia
+Typ ozubenia:
+Evolventné
+Cykloidné
+Dodatočné parametre
+Rada 1
+Rada 2
+Modul ozubenia
+Počet zubov
+Jednotkové posunutie
+Polomer tvoriacej kružnice hypocykloidy
+Uhol profilu
+Exportovanie
+Možnosti:
+Obrázok
+Typ grafiky:
+Rastrová, Vektorová
+Formát
+Súradnice
+Poradie profilu:
+Cesta:
+Zadajte názov súboru
+EXPORTOVAŤ
+ZOBRAZIŤ
+ZMAZAŤ POSLEDNÝ
+ZMAZAŤ VŠETKO
