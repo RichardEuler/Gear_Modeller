@@ -1,25 +1,23 @@
 % Copyright (c) 2026 Richard Timko
 function outerLanguageFun(app, text_file)
-    % Function language manager for outer app components
+    % outerLanguageFun — Assign text from the "outer" language file to
+    % top-level application components (figure titles, tab titles, etc.).
 
-    % Counter function
+    % Sequential counter that returns the next line index on each call
+    c = 0;
     function current_number = seq
-        persistent c; % Declare 'counter' as persistent
-        if isempty(c)
-            c = 0; % Initialize counter if it's the first call
-        end
-        c = c + 1; % Increment the counter
-        current_number = c; %  Output the current number
-        if c >= numel(text_file)
-            c = 0; % Reset the counter when the maximum number of lines has been reached
-        end
+        c = c + 1;
+        current_number = c;
     end
 
-app.HomeUtils.FigureText.String = text_file{seq};
-app.MainUIFigure.Name = text_file{seq};
-app.OutputFigure.Name = text_file{seq};
-
-% Tab Titles
-app.HomeTab.Title = text_file{seq};
-app.ProfileTab.Title = text_file{seq};
+    % Line 1: standby annotation text on the output figure
+    app.HomeUtils.FigureText.String = text_file{seq};
+    % Line 2: main UI figure title
+    app.MainUIFigure.Name = text_file{seq};
+    % Line 3: output figure title
+    app.OutputFigure.Name = text_file{seq};
+    % Line 4: Home tab title
+    app.HomeTab.Title = text_file{seq};
+    % Line 5: Profile tab title
+    app.ProfileTab.Title = text_file{seq};
 end

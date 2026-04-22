@@ -1,5 +1,5 @@
-Selection of Significant Circles  
-Activate All Significant Circles  
+Selection of Relevant Circles  
+Activate All Relevant Circles  
 Pitch Circle  
 Base Circle  
 Addendum Circle  

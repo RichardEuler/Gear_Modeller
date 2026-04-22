@@ -27,6 +27,7 @@ Modul ozubenia
 Počet zubov
 Jednotkové posunutie
 Polomer tvoriacej kružnice hypocykloidy
+Uhol profilu
 Exportovanie
 Možnosti:
 Obrázok

@@ -1,5 +1,5 @@
 Waiting for user response.  
-Gear Modeller
+Gear Model
 Graphical output of the application  
 Home  
 Tooth profile model

@@ -1,38 +1,33 @@
 % Copyright (c) 2026 Richard Timko
 classdef contextMenuModuleUtils
-    % Handles the dynamic creation of a uicontextmenu for standard module
-    % selection.
-    % This class manages the logic for displaying gear module series
-    % in a context menu, allowing for a clean separation of concerns
-    % from the main app code.
+    % contextMenuModuleUtils — Creates a context menu for selecting
+    % standard module values from predefined series (Series 1 and 2).
 
     properties
-        ContextMenu % Uicontextmenu object
-        SeriesMenu1 % Uimenu object for first series selection
-        SeriesMenu2 % Uimenu object for second series selection
-        ModuleSeries % Standard module series
+        ContextMenu   % The uicontextmenu object
+        SeriesMenu1   % Submenu for Series 1
+        SeriesMenu2   % Submenu for Series 2
+        ModuleSeries  % Nx2 matrix of standard module values
     end
 
     methods
-        function obj = contextMenuModuleUtils(app,arg)
+        function obj = contextMenuModuleUtils(app, editField)
+            % Build the context menu and attach it to the given edit field.
             obj.ContextMenu = uicontextmenu(app.MainUIFigure);
 
-            obj.ModuleSeries(:,2) = readmatrix(fullfile(app.appFolder,"Standard_module_series","Module_series_2.txt"));
-            obj.ModuleSeries(:,1) = readmatrix(fullfile(app.appFolder,"Standard_module_series","Module_series_1.txt"));
+            obj.ModuleSeries(:,1) = readmatrix(fullfile(app.appFolder, 'Standard_module_series', 'Module_series_1.txt'));
+            obj.ModuleSeries(:,2) = readmatrix(fullfile(app.appFolder, 'Standard_module_series', 'Module_series_2.txt'));
 
-            % Create Series menu items
-            obj.SeriesMenu1 = uimenu(obj.ContextMenu,"Text", "Rada 1");
-            for j = 1:size(obj.ModuleSeries,1)
-                str_module = num2str(obj.ModuleSeries(j,1)) + " mm";
-                uimenu(obj.SeriesMenu1,"Text",str_module,...
-                    "MenuSelectedFcn", @(src,event) set(arg,"Value",obj.ModuleSeries(j,1)));
+            obj.SeriesMenu1 = uimenu(obj.ContextMenu, 'Text', 'Series 1');
+            for j = 1:size(obj.ModuleSeries, 1)
+                uimenu(obj.SeriesMenu1, 'Text', num2str(obj.ModuleSeries(j,1)) + " mm", ...
+                    'MenuSelectedFcn', @(~,~) set(editField, 'Value', obj.ModuleSeries(j,1)));
             end
 
-            obj.SeriesMenu2 = uimenu(obj.ContextMenu,"Text", "Rada 2");
-            for j = 1:size(obj.ModuleSeries,1)
-                str_module = num2str(obj.ModuleSeries(j,2)) + " mm";
-                uimenu(obj.SeriesMenu2,"Text",str_module,...
-                    "MenuSelectedFcn", @(src,event) set(arg,"Value",obj.ModuleSeries(j,2)));
+            obj.SeriesMenu2 = uimenu(obj.ContextMenu, 'Text', 'Series 2');
+            for j = 1:size(obj.ModuleSeries, 1)
+                uimenu(obj.SeriesMenu2, 'Text', num2str(obj.ModuleSeries(j,2)) + " mm", ...
+                    'MenuSelectedFcn', @(~,~) set(editField, 'Value', obj.ModuleSeries(j,2)));
             end
         end
     end

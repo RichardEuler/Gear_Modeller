@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="600"
+   height="600"
+   viewBox="0 0 7200 7200"
+   fill="#ee1c25"
+   version="1.1"
+   id="svg944"
+   sodipodi:docname="SK_flag.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview946"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     lock-margins="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="0.85677772"
+     inkscape:cx="314.55066"
+     inkscape:cy="291.20739"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg944" />
+  <title
+     id="title922">Flag of Slovakia</title>
+  <defs
+     id="defs926">
+    <clipPath
+       id="c">
+      <path
+         id="s"
+         d="m 4678,1746 c 0,0 56,561 56,1683 -8,1146 -865,1726 -1494,2031 -629,-305 -1486,-885 -1494,-2031 0,-1122 56,-1683 56,-1683 z" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1364">
+      <circle
+         style="opacity:0.1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:45.3543;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+         id="circle1366"
+         cx="3.5019093"
+         cy="3"
+         r="3" />
+    </clipPath>
+  </defs>
+  <g
+     transform="matrix(1200,0,0,1200,-602.29111,0)"
+     id="g934"
+     clip-path="url(#clipPath1364)">
+    <path
+       fill="#ffffff"
+       d="M 0,0 H 9 V 6 H 0 Z"
+       id="path928" />
+    <path
+       fill="#0b4ea2"
+       d="M 0,2 H 9 V 6 H 0 Z"
+       id="path930" />
+    <path
+       d="M 0,4 H 9 V 6 H 0 Z"
+       id="path932" />
+  </g>
+  <use
+     xlink:href="#s"
+     id="use936"
+     x="0"
+     y="0"
+     width="100%"
+     height="100%"
+     transform="translate(-602.29111)" />
+  <path
+     fill="#ffffff"
+     d="M 2510.7089,4800 V 3397 c -475,0 -610,42 -752,85 a 2323,2323 0 0 0 0,-431 c 142,43 277,85 752,85 v -390 c -150,0 -357,6 -595,87 a 2323,2323 0 0 0 0,-432 c 238,80 445,86 595,86 0,-113 -35,-356 -79,-557 a 2323,2323 0 0 0 412,0 c -44,201 -79,444 -79,557 150,0 357,-6 595,-86 a 2323,2323 0 0 0 0,432 c -238,-81 -445,-87 -595,-87 v 390 c 475,0 610,-42 752,-85 a 2323,2323 0 0 0 0,431 c -142,-43 -277,-85 -752,-85 v 1403 z"
+     id="path938" />
+  <path
+     clip-path="url(#c)"
+     fill="#0b4ea2"
+     d="m 2463,5903 a 507,867 0 1 1 319,-1541 584,1084 0 0 1 916,0 507,867 0 1 1 319,1541 z"
+     id="path940"
+     transform="translate(-602.29111)" />
+  <use
+     xlink:href="#s"
+     fill="none"
+     stroke="#ffffff"
+     stroke-width="108"
+     id="use942"
+     x="0"
+     y="0"
+     width="100%"
+     height="100%"
+     transform="translate(-602.29111)" />
+  <metadata
+     id="metadata1028">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Flag of Slovakia</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

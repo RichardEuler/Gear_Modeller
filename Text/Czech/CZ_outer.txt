@@ -1,5 +1,5 @@
 Čekání na odezvu uživatele.  
-Gear Modeller 
+Gear Model 
 Grafický výstup aplikace  
 Domů  
 Model profilu zubu

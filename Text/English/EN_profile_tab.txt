@@ -15,9 +15,9 @@ Solid, Dashed, Dotted, Dash-Dotted
 Graph:
 Grid
 Axes
-Significant Circles
+Relevant Circles
 Gear Settings
-Type of Gearing:
+Gearing Type:
 Involute
 Cycloidal
 Additional Parameters
@@ -26,7 +26,8 @@ Row 2
 Gear Module
 Number of Teeth
 Unit Shift
-Radius of the Generating Circle of the Hypocycloid
+Radius of Hypocycloid Generating Circle
+Profile Angle
 Exporting
 Options:
 Image

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.0"
+   width="600"
+   height="600"
+   id="svg2141"
+   sodipodi:docname="CZ_flag.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2145">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath2650">
+      <circle
+         style="opacity:0.1;fill:none;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+         id="circle2652"
+         cx="450"
+         cy="300"
+         r="300" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="namedview2143"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:object-paths="false"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:zoom="0.59916667"
+     inkscape:cx="-100.97357"
+     inkscape:cy="474.82615"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2141"
+     lock-margins="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <g
+     id="g2333"
+     transform="translate(-150)"
+     clip-path="url(#clipPath2650)">
+    <rect
+       width="900"
+       height="600"
+       fill="#d7141a"
+       id="rect2135"
+       x="0"
+       y="0" />
+    <rect
+       width="900"
+       height="300"
+       fill="#ffffff"
+       id="rect2137"
+       x="0"
+       y="0" />
+    <path
+       d="M 450,300 0,0 v 600 z"
+       fill="#11457e"
+       id="path2139" />
+  </g>
+</svg>

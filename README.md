@@ -1,7 +1,9 @@
-# GEAR MODELLER
+Command to start application: `Gear_model`
+
+# GEAR MODEL
 The application built in MATLAB serves as a tool for building the exact theoretical gear tooth geometry during the hobbing and MAAG shaping method manufacturing process.
 
-Gear Modeller is a comprehensive MATLAB-based application designed to generate the exact theoretical gear tooth geometries of both involute and cycloidal profiles. The software achieves this by mathematically simulating actual manufacturing processes, specifically rack-cutter hobbing and MAAG shaping. Developed as an own student project within the academic framework of the Faculty of Mechanical Engineering at Brno University of Technology, this project serves as a kinematic and geometric analysis tool. It highlights that the fundamental law of gearing can be satisfied by alternative profile shapes (such as cycloidal gears) alongside the standard involute profiles.
+Gear Model is a comprehensive MATLAB-based application designed to generate the exact theoretical gear tooth geometries of both involute and cycloidal profiles. The software achieves this by mathematically simulating actual manufacturing processes, specifically rack-cutter hobbing and MAAG shaping. Developed as an own student project within the academic framework of the Faculty of Mechanical Engineering at Brno University of Technology, this project serves as a kinematic and geometric analysis tool. It highlights that the fundamental law of gearing can be satisfied by alternative profile shapes (such as cycloidal gears) alongside the standard involute profiles.
 
 Tested on MATLAB: R2025b
 
