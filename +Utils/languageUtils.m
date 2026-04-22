@@ -39,7 +39,7 @@ classdef languageUtils < handle
             if app.AnimationTabUtils.ToothingChoices(1).Value == 1
                 file_name = lang{2} + "_animation_tab_involute.txt";
             else
-                file_name = lang{2} + "_animation_tab_cykloid.txt";
+                file_name = lang{2} + "_animation_tab_cycloid.txt";
             end
             obj.AnimationTabTextFile = readlines(fullfile(app.appFolder, 'Text', lang{1}, file_name));
         end
