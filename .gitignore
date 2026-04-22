@@ -1,0 +1,44 @@
+# ========================
+# MATLAB Auto-Generated & Cache
+# ========================
+# Ignore MATLAB build tool caches (from your resources folder)
+.buildtool/
+resources/**/.buildtool/
+
+# Ignore compiled MATLAB toolboxes (unless you specifically want to track releases)
+*.mltbx
+
+# Deployment and packaging logs
+deploymentLog.html
+
+# Standard MATLAB temporary/cache files
+*.asv
+*.m~
+*.req~
+slprj/
+*.slxc
+
+# ========================
+# Project Specific Logs/Data
+# ========================
+# Ignore raw API dumps
+_raw_api_response.txt
+
+# ========================
+# Python (Proactive for Python_based folder)
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+.pytest_cache/
+
+# ========================
+# OS Generated Files
+# ========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
