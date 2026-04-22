@@ -30,7 +30,7 @@ _raw_api_response.txt
 __pycache__/
 *.py[cod]
 *$py.class
-venv/
+.venv/
 env/
 .env
 .pytest_cache/
