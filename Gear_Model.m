@@ -1,4 +1,4 @@
-classdef Gear_model < handle
+classdef Gear_Model < handle
     % ------------------------------------------------------------------------
     % Gear_model — Main application class for the Gear Model tool.
     %
@@ -1220,7 +1220,7 @@ classdef Gear_model < handle
     % ====================================================================
     methods (Access = public)
 
-        function app = Gear_model()
+        function app = Gear_Model()
             % Constructor: build components then run startup logic.
             createComponents(app);
             startupFcn(app);
