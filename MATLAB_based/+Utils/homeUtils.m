@@ -102,7 +102,7 @@ classdef homeUtils < handle
             set(obj.HomeLabel(2), 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontColor', [0.3 0.3 0.3]);
             obj.HomeLabel(2).Position(4) = 50;
             obj.HomeLabel(2).Position(1:3) = [obj.HomeLabel(1).Position(1)  20  obj.HomeLabel(1).Position(3)];
-            obj.HomeLabel(2).Text = char(169) + " 2026 Richard Timko | v1.1.0";
+            obj.HomeLabel(2).Text = char(169) + " 2026 Richard Timko | v1.1.1";
 
             % Make all home-tab components visible
             set([obj.BackgroundHomeImage  obj.FacultyImage  obj.SKImage  ...
