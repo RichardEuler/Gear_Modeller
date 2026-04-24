@@ -5,7 +5,7 @@ Profile Contact Ratio
 Correction Type  
 2 - Pinion  
 3 - Gear Wheel  
-Pitch Circle Diameter  
+Rolling Circle Diameter  
 Pitch Diameter  
 Base Circle Diameter  
 Addendum Circle Diameter  

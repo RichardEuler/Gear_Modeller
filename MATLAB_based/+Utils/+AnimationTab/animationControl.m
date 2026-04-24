@@ -47,6 +47,15 @@ classdef animationControl < handle
         P;  W;  R                 % Plot handles (pinion, wheel, rack)
         H;  Z                     % Handles for circles and action-line objects
         theta;  phi
+
+        % Resume frame indices — preserved across pause/play so the
+        % animation continues from the frame on which it was paused
+        % instead of restarting from the beginning.
+        resume_j_mesh    (1,1) double {mustBeInteger, mustBePositive} = 1
+        resume_j_hobbing (1,1) double {mustBeInteger, mustBePositive} = 1
+
+        % Context menu + annotation for the live FPS readout.
+        FPSMenu   % Utils.AnimationTab.animationContextMenuFPS (created in the constructor)
     end
 
     methods
@@ -87,27 +96,63 @@ classdef animationControl < handle
             obj.R = gobjects(2, 1);
             obj.H = gobjects(2, 4);
             obj.Z = gobjects(7, 1);
+
+            % Live-FPS context menu, attached to the FPS spinner and its
+            % matching label. The context menu must be parented to the
+            % uifigure that HOSTS those controls (the main UI figure),
+            % while the LaTeX annotation is parented to the animation
+            % axes on the separate output figure. The main UI figure is
+            % located via ancestor() so the constructor signature does
+            % not need a new parameter.
+            mainFig = ancestor(ut.AnimationSpinners(2), 'figure');
+            obj.FPSMenu = Utils.AnimationTab.animationContextMenuFPS( ...
+                mainFig, obj.AxisAnimation, ...
+                [ut.AnimationSpinners(2), ut.AnimationLabels(2)]);
         end
 
         function updateAnimationSetting(obj, ut)
-            % Recalculate frame timing when spinner values change.
+            % Recalculate frame timing when spinner values change. This is
+            % wired to AnimationSpinners(1..2).ValueChangedFcn so the new
+            % FPS takes effect immediately without pressing Display.
 
             obj.n(1) = ut.AnimationSpinners(1).Value / 3600;   % rev/s
             obj.n(2) = obj.n(1) / obj.u;
             ut.AnimationSpinners(2).Limits = [max(obj.z)*obj.n(1)  Inf];
             obj.FPS = ut.AnimationSpinners(2).Value;
+            obj.t_p = 1 / obj.FPS;                             % frame period [s]
 
             obj.phi = 2*pi * obj.n / obj.FPS;                  % rad/frame
             obj.T.p = obj.T_fun(-obj.phi(1));
             obj.T.w = obj.T_fun( obj.phi(2));
 
+            % Determine the new frame-cache length for the current mode.
             if ut.Mode.ValueIndex == 1
-                frames_in_pitch = round(obj.FPS ./ (obj.z(1) .* obj.n(1)));
-                obj.frames_mesh = cell(2, frames_in_pitch);
+                newLen = round(obj.FPS ./ (obj.z(1) .* obj.n(1)));
+                haveGears = ~isempty(obj.pinion) && ~isempty(obj.wheel);
             else
-                frames_rack = round(2*obj.theta / obj.phi(1));
-                obj.frames_hobbing = cell(1, frames_rack);
+                newLen = round(2*obj.theta / obj.phi(1));
+                haveGears = ~isempty(obj.pinion) && isfield(obj.tooth, 'r') && ~isempty(obj.tooth.r);
             end
+
+            % If Display has never been pressed, just size the empty cell
+            % array — the frames will be populated by plotAnimation later.
+            % If gears already exist, rebuild the frame cache in place so
+            % that a running (or paused) animation continues immediately
+            % at the new FPS without requiring a Display press.
+            if ~haveGears
+                if ut.Mode.ValueIndex == 1
+                    obj.frames_mesh = cell(2, newLen);
+                else
+                    obj.frames_hobbing = cell(1, newLen);
+                end
+                return
+            end
+
+            rebuildFrames(obj, ut, newLen);
+
+            % Clamp any stored resume index to the new frame-cache length.
+            if obj.resume_j_mesh > newLen, obj.resume_j_mesh = 1; end
+            if obj.resume_j_hobbing > newLen, obj.resume_j_hobbing = 1; end
         end
 
         function assignValues(obj, ut)
@@ -282,6 +327,15 @@ classdef animationControl < handle
             ut = app.AnimationTabUtils;
             app.AnimationExport.ExportButton.Enable = 'on';
 
+            % Refresh frame-timing state (t_p, phi, T.p, T.w, frame-cache
+            % length) so that any parameter edits since the last Display
+            % are honoured before new frames are built. Without this the
+            % wheel rotation speed would reflect the previous gear ratio
+            % obj.u, so changing z1/z2 and pressing Display alone would
+            % produce a visually incorrect mesh until the FPS spinner is
+            % nudged.
+            updateAnimationSetting(obj, ut);
+
             if ut.Mode.ValueIndex == 1
                 % ---- Gear Meshing Mode ----
                 if ut.ToothingChoices(1).Value == 1
@@ -340,6 +394,10 @@ classdef animationControl < handle
             axis(obj.AxisAnimation, 'equal');
             hold(obj.AxisAnimation, 'on');
 
+            % A fresh plot invalidates any previously saved pause point.
+            obj.resume_j_mesh    = 1;
+            obj.resume_j_hobbing = 1;
+
             if ut.Checkers(1).Value, grid(obj.AxisAnimation, 'on'); else, grid(obj.AxisAnimation, 'off'); end
             if ut.Checkers(2).Value, axis(obj.AxisAnimation, 'on'); else, axis(obj.AxisAnimation, 'off'); end
 
@@ -353,16 +411,8 @@ classdef animationControl < handle
             lineStyle = Utils.ProfileTab.profileLineStyleFunction(ut.StyleLine.ValueIndex);
 
             if ut.Mode.ValueIndex == 1
-                % Pre-compute every frame within one pitch
-                obj.frames_mesh{1,1} = obj.pinion;
-                obj.frames_mesh{2,1} = obj.wheel;
-                for j = 1:size(obj.frames_mesh, 2)-1
-                    obj.frames_mesh{1, j+1} = obj.T.p * obj.frames_mesh{1, j};
-                    obj.frames_mesh{2, j+1} = obj.T.w * obj.frames_mesh{2, j};
-                end
-                for j = 1:size(obj.frames_mesh, 2)
-                    obj.frames_mesh{2, j}(2,:) = obj.frames_mesh{2, j}(2,:) + obj.a_w;
-                end
+                % Pre-compute every frame within one pitch.
+                rebuildFrames(obj, ut, size(obj.frames_mesh, 2));
 
                 if ut.Menus(3).Checked == 0
                     obj.P(2) = patch(obj.AxisAnimation, 'XData', obj.frames_mesh{1,1}(1,:), 'YData', obj.frames_mesh{1,1}(2,:), ...
@@ -376,11 +426,9 @@ classdef animationControl < handle
                 obj.W(1) = plot(obj.AxisAnimation, obj.frames_mesh{2,1}(1,:), obj.frames_mesh{2,1}(2,:), ...
                     'Color', ut.ColorChoice(1).Value, 'LineWidth', ut.AnimationSpinners(3).Value, 'LineStyle', lineStyle);
             else
-                % Hobbing mode frames
-                for j = 1:numel(obj.frames_hobbing)
-                    obj.frames_hobbing{j} = obj.tooth.r + [(j-1)*obj.phi(1)*obj.d(1)/2; 0];
-                    obj.frames_hobbing{j} = obj.T_fun(obj.theta - (j-1)*obj.phi(1)) * obj.frames_hobbing{j};
-                end
+                % Hobbing mode frames.
+                rebuildFrames(obj, ut, numel(obj.frames_hobbing));
+
                 obj.P(1) = plot(obj.AxisAnimation, obj.pinion(1,:), obj.pinion(2,:), ...
                     'Color', ut.ColorChoice(1).Value, 'LineWidth', ut.AnimationSpinners(3).Value, 'LineStyle', lineStyle);
                 obj.R(1) = plot(obj.AxisAnimation, obj.frames_hobbing{1}(1,:), obj.frames_hobbing{1}(2,:), ...
@@ -442,18 +490,83 @@ classdef animationControl < handle
                 if app.AnimationExport.video_export_state
                     exportMeshingVideo(obj, app, id, path_text, format);
                 else
-                    % Live playback loop
+                    % Live playback loop with adaptive frame skipping.
+                    %
+                    % Angular speed is fixed by obj.phi (rad per frame) and
+                    % obj.FPS (target frames per second). When the machine
+                    % cannot render every precomputed frame within t_p,
+                    % we skip frames instead of slowing down: we advance
+                    % the geometry by `skip` frames per iteration, so the
+                    % gears still rotate at the correct real-world speed
+                    % and the user-perceived animation runs at ~obj.FPS /
+                    % skip render calls per second, with angular velocity
+                    % unchanged. The resume index is always the last
+                    % rendered frame, so pause/play is unaffected.
+                    nFrames = size(obj.frames_mesh, 2);
+                    if obj.resume_j_mesh < 1 || obj.resume_j_mesh > nFrames
+                        obj.resume_j_mesh = 1;
+                    end
+                    j    = obj.resume_j_mesh;
+                    skip = 1;
+                    ema_fps = obj.FPS;   % smoothed measured FPS for the readout
+
                     while obj.start_state == 1
-                        for j = 1:size(obj.frames_mesh, 2)
-                            if obj.start_state == 0, break; end
-                            if ~isgraphics(obj.P(1)) || ~isvalid(obj.P(1)) || ~isgraphics(obj.W(1)) || ~isvalid(obj.W(1))
-                                obj.start_state = 0; return
-                            end
-                            set(obj.P(id), 'XData', obj.frames_mesh{1,j}(1,:), 'YData', obj.frames_mesh{1,j}(2,:));
-                            set(obj.W(id), 'XData', obj.frames_mesh{2,j}(1,:), 'YData', obj.frames_mesh{2,j}(2,:));
-                            updateActionPoints(obj, app, j);
-                            drawnow; pause(obj.t_p);
+                        if ~isgraphics(obj.P(1)) || ~isvalid(obj.P(1)) || ~isgraphics(obj.W(1)) || ~isvalid(obj.W(1))
+                            obj.start_state = 0; return
                         end
+
+                        % Time the full iteration (render + sleep) so the
+                        % measured FPS reflects what the user actually sees.
+                        t_iter_start = tic;
+
+                        set(obj.P(id), 'XData', obj.frames_mesh{1,j}(1,:), 'YData', obj.frames_mesh{1,j}(2,:));
+                        set(obj.W(id), 'XData', obj.frames_mesh{2,j}(1,:), 'YData', obj.frames_mesh{2,j}(2,:));
+                        updateActionPoints(obj, app, j);
+                        drawnow;
+                        t_render = toc(t_iter_start);
+
+                        % Sleep for the target period for THIS iteration:
+                        % skip*t_p, because rendering one frame must take
+                        % the wall-clock time of `skip` angular steps to
+                        % keep the gear speed correct.
+                        t_target    = skip * obj.t_p;
+                        t_remaining = t_target - t_render;
+                        if t_remaining > 0
+                            pause(t_remaining);
+                        end
+
+                        % Measured iteration time and FPS.
+                        t_iter = toc(t_iter_start);
+                        inst_fps = 1 / max(t_iter, eps);
+
+                        % Adapt skip for the NEXT iteration. If a single
+                        % render overshot t_p we need skip = ceil(t_render/t_p)
+                        % to keep angular speed. Clamp to [1, nFrames] so
+                        % we never skip past a full pitch (which would
+                        % alias — the gears would appear to rotate slower
+                        % or backwards). Shrink skip only when render time
+                        % clearly fits inside a smaller window, to avoid
+                        % oscillation.
+                        need = ceil(t_render / obj.t_p);
+                        if need < 1, need = 1; end
+                        if need > nFrames, need = nFrames; end
+                        if need > skip
+                            skip = need;
+                        elseif need <= max(1, skip - 1)
+                            skip = max(1, skip - 1);
+                        end
+
+                        % Smooth and publish the live FPS (if enabled).
+                        ema_fps = 0.7 * ema_fps + 0.3 * inst_fps;
+                        obj.FPSMenu.update(ema_fps);
+
+                        % Advance by `skip` frames, wrapping at pitch end.
+                        j = j + skip;
+                        while j > nFrames, j = j - nFrames; end
+
+                        % Save NEXT frame index so that if the user pauses
+                        % now, resume starts exactly where we left off.
+                        obj.resume_j_mesh = j;
                     end
                 end
 
@@ -471,13 +584,62 @@ classdef animationControl < handle
                 if app.AnimationExport.video_export_state
                     exportHobbingVideo(obj, app, id_r, path_text, format);
                 else
+                    % Live playback loop with adaptive frame skipping.
+                    % Hobbing is a finite linear pass, so skipping frames
+                    % just makes the rack advance in bigger angular steps
+                    % while keeping real-world speed correct.
+                    nFrames = numel(obj.frames_hobbing);
+                    if obj.resume_j_hobbing < 1 || obj.resume_j_hobbing > nFrames
+                        obj.resume_j_hobbing = 1;
+                    end
+                    j    = obj.resume_j_hobbing;
+                    skip = 1;
+                    ema_fps = obj.FPS;
+
                     while obj.start_state == 1
-                        for j = 1:numel(obj.frames_hobbing)
-                            if obj.start_state == 0, break; end
-                            if ~isgraphics(obj.R(1)) || ~isvalid(obj.R(1)), obj.start_state = 0; return; end
-                            set(obj.R(id_r), 'XData', obj.frames_hobbing{j}(1,:), 'YData', obj.frames_hobbing{j}(2,:));
-                            drawnow; pause(obj.t_p);
+                        if ~isgraphics(obj.R(1)) || ~isvalid(obj.R(1))
+                            obj.start_state = 0; return
                         end
+
+                        t_iter_start = tic;
+                        set(obj.R(id_r), 'XData', obj.frames_hobbing{j}(1,:), 'YData', obj.frames_hobbing{j}(2,:));
+                        drawnow;
+                        t_render = toc(t_iter_start);
+
+                        t_target    = skip * obj.t_p;
+                        t_remaining = t_target - t_render;
+                        if t_remaining > 0
+                            pause(t_remaining);
+                        end
+                        t_iter = toc(t_iter_start);
+                        inst_fps = 1 / max(t_iter, eps);
+
+                        % Save resume index for the just-rendered frame.
+                        obj.resume_j_hobbing = j;
+
+                        % Adapt skip the same way as in meshing mode.
+                        need = ceil(t_render / obj.t_p);
+                        if need < 1, need = 1; end
+                        if need > nFrames, need = nFrames; end
+                        if need > skip
+                            skip = need;
+                        elseif need <= max(1, skip - 1)
+                            skip = max(1, skip - 1);
+                        end
+
+                        ema_fps = 0.7 * ema_fps + 0.3 * inst_fps;
+                        obj.FPSMenu.update(ema_fps);
+
+                        % Advance by `skip` frames. No wrap — hobbing is
+                        % finite: once we step past nFrames the playback
+                        % stops and the resume index is reset.
+                        j = j + skip;
+                        if j > nFrames
+                            obj.resume_j_hobbing = 1;
+                            obj.start_state = 0;
+                            break
+                        end
+                        obj.resume_j_hobbing = j;
                     end
                 end
             end
@@ -489,6 +651,11 @@ classdef animationControl < handle
             end
             if isvalid(app.AnimationExport.ExportButton)
                 app.AnimationExport.ExportButton.Enable = 'on';
+            end
+
+            % Reset the live FPS readout — the animation is not running.
+            if ~isempty(obj.FPSMenu) && isvalid(obj.FPSMenu)
+                obj.FPSMenu.showIdle();
             end
         end
 
@@ -533,6 +700,15 @@ classdef animationControl < handle
 
             if app.AnimationTabUtils.ToothingChoices(1).Value == 1
                 % ---- Involute ----
+                % Endpoints of the line of action. Classically these are
+                % the intersections of the LoA with the two addendum
+                % circles (index 1 = pinion-addendum, 2 = wheel-addendum
+                % after the coord flip below). When a gear has few teeth
+                % and undercut shortens its active involute flank,
+                % contact cannot occur below that gear's active-start
+                % radius either; that constraint can be more restrictive
+                % than the mating gear's addendum circle and must be
+                % applied here to obtain the real path of contact.
                 X = zeros(1,3); Y = zeros(1,3);
                 for i = 2:-1:1
                     A = tan(obj.alpha_w)^2 + 1;
@@ -546,31 +722,119 @@ classdef animationControl < handle
                 end
                 Y(2) = obj.a_w - Y(2);  X(2) = -X(2);
 
+                % Active-flank start radii of the two gears (undercut).
+                R_as = [obj.gear.p.R_active_start, obj.gear.w.R_active_start];
+
+                % The LoA passes through the pitch point (0, d_w(1)/2)
+                % with slope -tan(alpha_w); its unit direction vector is
+                % therefore (cos(alpha_w), -sin(alpha_w)). Parameterise
+                % points on it as P(s) = pitch + s*(dirX, dirY). With
+                % dirX > 0 the existing convention X(1) < X(2) maps to
+                % s1 < 0 < s2.
+                pitchX = 0;  pitchY = obj.d_w(1)/2;
+                dirX   =  cos(obj.alpha_w);
+                dirY   = -sin(obj.alpha_w);
+
+                % Convert the existing addendum-based endpoints to s so
+                % we can compare them with any undercut-based candidate.
+                s1_add = (X(1)-pitchX)*dirX + (Y(1)-pitchY)*dirY;   % negative
+                s2_add = (X(2)-pitchX)*dirX + (Y(2)-pitchY)*dirY;   % positive
+
+                % Distance from a gear centre C = (0, cY) to any point
+                % P(s) on the LoA is |P(s) - C|^2 = s^2 + 2s*(cY_rel*dirY)
+                % + cY_rel^2, with cY_rel = pitchY - cY. Solving
+                % |P - C|^2 = R^2 gives a pair of roots symmetric about
+                % s* = -cY_rel*dirY, the base-circle tangent point.
+                solveLoACircle = @(R, cY_rel) deal( ...
+                    -cY_rel*dirY - sqrt(max(R^2 - cY_rel^2 + (cY_rel*dirY)^2, 0)), ...
+                    -cY_rel*dirY + sqrt(max(R^2 - cY_rel^2 + (cY_rel*dirY)^2, 0)));
+
+                % Pinion radius along the LoA has its minimum (R_b) on
+                % the positive-s side, so s2_add is the LoA endpoint
+                % nearest the pinion base tangent. If the pinion's active
+                % involute starts above R_b (undercut), the LoA portion
+                % where pinion-radius is below R_active_start is inactive
+                % and must be excluded. We clamp s2 DOWN to the smaller
+                % root of pinion-radius = R_active_start (the one nearer
+                % the pinion base tangent).
+                if R_as(1) > obj.gear.p.R_b * (1 + 1e-9)
+                    [s_small_p, s_large_p] = solveLoACircle(R_as(1), pitchY);
+                    s_cand = min(s_small_p, s_large_p);
+                    if isfinite(s_cand) && s_cand < s2_add
+                        s2_add = s_cand;
+                        X(2) = pitchX + s2_add*dirX;
+                        Y(2) = pitchY + s2_add*dirY;
+                    end
+                end
+
+                % Wheel radius along the LoA has its minimum on the
+                % negative-s side, so s1_add lies nearest the wheel base
+                % tangent. Wheel undercut restricts this side: clamp s1
+                % UP (toward zero) to the larger (less negative) root of
+                % wheel-radius = R_active_start.
+                if R_as(2) > obj.gear.w.R_b * (1 + 1e-9)
+                    cY_rel_w = pitchY - obj.a_w;                 % negative
+                    [s_small_w, s_large_w] = solveLoACircle(R_as(2), cY_rel_w);
+                    s_cand = max(s_small_w, s_large_w);
+                    if isfinite(s_cand) && s_cand > s1_add
+                        s1_add = s_cand;
+                        X(1) = pitchX + s1_add*dirX;
+                        Y(1) = pitchY + s1_add*dirY;
+                    end
+                end
+
                 l1 = sqrt((Y(2)-obj.d_w(1)/2)^2 + X(2)^2);
                 l2 = sqrt((Y(1)-obj.d_w(1)/2)^2 + X(1)^2);
                 obj.length_action_line = l1 + l2;
                 obj.eps_a = obj.length_action_line / obj.gear.p.p_b;
 
                 if cond
+                    % Geometry of the base pitch on the LoA. X_pb and
+                    % Y_pb are the X and Y components of one base-pitch
+                    % vector along the line of action, measured in the
+                    % pinion-centred frame. They are needed BOTH for the
+                    % two-pair-zone "+" markers (which are offset from
+                    % the LoA endpoints by exactly one base pitch) AND
+                    % for the contact-track animation (which advances
+                    % one base pitch along X per pinion pitch of
+                    % rotation). This is a kinematic invariant of the
+                    % meshing — independent of eps_a — so it must be
+                    % computed unconditionally.
                     X_pb = obj.gear.p.p_b*cos(obj.alpha_w);
                     Y_pb = obj.gear.p.p_b*sin(obj.alpha_w);
-                    X_E  = [X(1)+X_pb, X(2)-X_pb];
-                    Y_E  = [Y(1)-Y_pb, Y(2)+Y_pb];
+
+                    % One-contact-zone boundaries (the "+" markers).
+                    % They are only physically meaningful when eps_a > 1;
+                    % when eps_a <= 1 the two candidate points would
+                    % overlap or swap so we suppress them.
+                    two_pair_zone = obj.eps_a > 1;
+                    if two_pair_zone
+                        X_E = [X(1)+X_pb, X(2)-X_pb];
+                        Y_E = [Y(1)-Y_pb, Y(2)+Y_pb];
+                    end
                     X(3) = 0;  Y(3) = obj.d_w(1)/2;
 
                     ls = Utils.ProfileTab.profileLineStyleFunction(ut.Style(1));
                     obj.Z(1) = plot(obj.AxisAnimation, X(1:2), Y(1:2), 'Color', ut.Colours(1,:), 'LineWidth', ut.Width(1), 'LineStyle', ls);
                     obj.Z(2) = plot(obj.AxisAnimation, X, Y, '.', 'Color', ut.Colours(1,:), 'MarkerSize', 20);
-                    obj.Z(3) = plot(obj.AxisAnimation, X_E, Y_E, '+', 'Color', ut.Colours(1,:), 'MarkerSize', 20);
+                    if two_pair_zone
+                        obj.Z(3) = plot(obj.AxisAnimation, X_E, Y_E, '+', 'Color', ut.Colours(1,:), 'MarkerSize', 20);
+                    end
 
-                    % Lock action-frame length to exactly 4 pinion pitches
-                    % so shift == frames_in_pitch is an exact integer and
-                    % the 4 tracks stay aligned with the meshing loop.
-                    shift   = size(obj.frames_mesh, 2);              % frames_in_pitch
+                    % Contact-point animation. The contact point on the
+                    % LoA advances by one base pitch (X_pb along X) per
+                    % pinion pitch of rotation, i.e. per `shift` frames.
+                    % Four tracks are generated and offset by one pitch
+                    % each via circshift; after masking to the active
+                    % LoA span [X(1), X(2)] the tracks automatically
+                    % degenerate when eps_a <= 1 (the active window is
+                    % shorter than one base pitch, so at most one track
+                    % has a non-NaN point at any given frame — which is
+                    % physically correct: only one tooth pair is in
+                    % contact at a time).
+                    shift   = size(obj.frames_mesh, 2);   % frames_in_pitch
                     nFrames = 4 * shift;
-                    % Resample dX so one pitch (shift frames) advances
-                    % exactly one base pitch along X.
-                    dX_pb = X_pb / double(shift);
+                    dX_pb   = X_pb / double(shift);
                     obj.action_frames = cell(4, 1);
                     obj.action_frames{1} = nan(2, nFrames);
                     for i = 1:nFrames
@@ -585,6 +849,10 @@ classdef animationControl < handle
 
                     colour = getPointColour(app);
                     for j = 1:4
+                        % First frame may be NaN if this track starts
+                        % outside the active LoA window; that is handled
+                        % naturally by MATLAB's plot() which simply
+                        % hides points with NaN coordinates.
                         obj.Z(j+3) = plot(obj.AxisAnimation, obj.action_frames{j}(1,1), obj.action_frames{j}(2,1), colour, 'MarkerSize', 30);
                     end
                 end
@@ -617,32 +885,50 @@ classdef animationControl < handle
                 if cond
                     X = [action(1,1) action(1,end) 0];
                     Y = [action(2,1) action(2,end) r(1)];
-                    eta = obj.gear.p.p ./ obj.rho_a;
-                    X_E = zeros(1,2); Y_E = zeros(1,2);
 
-                    if eta(1) < Phi_c(1)
-                        beta1 = Phi_c(1) - eta(1);
-                        X_E(1) = -obj.rho_a(1)*sin(beta1);
-                        Y_E(1) = -obj.rho_a(1)*cos(beta1) + r(1) + obj.rho_a(1);
-                    else
-                        beta1 = eta(1) - Phi_c(1);
-                        X_E(1) = obj.rho_a(2)*sin(beta1);
-                        Y_E(1) = obj.rho_a(2)*cos(beta1) + r(1) - obj.rho_a(2);
-                    end
-                    if eta(2) < Phi_c(2)
-                        beta2 = Phi_c(2) - eta(2);
-                        X_E(2) = obj.rho_a(2)*sin(beta2);
-                        Y_E(2) = obj.rho_a(2)*cos(beta2) + r(1) - obj.rho_a(2);
-                    else
-                        beta2 = eta(2) - Phi_c(2);
-                        X_E(2) = -obj.rho_a(1)*sin(beta2);
-                        Y_E(2) = -obj.rho_a(1)*cos(beta2) + r(1) + obj.rho_a(1);
+                    % `eta(i) = p / rho_a(i)` is the contact-arc angle
+                    % corresponding to one tooth pitch on each mating
+                    % roller. It drives BOTH the two-pair-zone "+" marker
+                    % placement AND the contact-track animation (tau_1,
+                    % tau_2 below), so compute it unconditionally — it is
+                    % a kinematic invariant, independent of eps_a.
+                    eta = obj.gear.p.p ./ obj.rho_a;
+
+                    % As in the involute branch: the one-contact-zone
+                    % boundary markers are only plotted when eps_a > 1.
+                    % When eps_a <= 1 the two candidate points collapse
+                    % or swap and are not physically meaningful.
+                    two_pair_zone = obj.eps_a > 1;
+
+                    if two_pair_zone
+                        X_E = zeros(1,2); Y_E = zeros(1,2);
+
+                        if eta(1) < Phi_c(1)
+                            beta1 = Phi_c(1) - eta(1);
+                            X_E(1) = -obj.rho_a(1)*sin(beta1);
+                            Y_E(1) = -obj.rho_a(1)*cos(beta1) + r(1) + obj.rho_a(1);
+                        else
+                            beta1 = eta(1) - Phi_c(1);
+                            X_E(1) = obj.rho_a(2)*sin(beta1);
+                            Y_E(1) = obj.rho_a(2)*cos(beta1) + r(1) - obj.rho_a(2);
+                        end
+                        if eta(2) < Phi_c(2)
+                            beta2 = Phi_c(2) - eta(2);
+                            X_E(2) = obj.rho_a(2)*sin(beta2);
+                            Y_E(2) = obj.rho_a(2)*cos(beta2) + r(1) - obj.rho_a(2);
+                        else
+                            beta2 = eta(2) - Phi_c(2);
+                            X_E(2) = -obj.rho_a(1)*sin(beta2);
+                            Y_E(2) = -obj.rho_a(1)*cos(beta2) + r(1) + obj.rho_a(1);
+                        end
                     end
 
                     ls = Utils.ProfileTab.profileLineStyleFunction(ut.Style(1));
                     obj.Z(1) = plot(obj.AxisAnimation, action(1,:), action(2,:), 'Color', ut.Colours(1,:), 'LineWidth', ut.Width(1), 'LineStyle', ls);
                     obj.Z(2) = plot(obj.AxisAnimation, X, Y, '.', 'Color', ut.Colours(1,:), 'MarkerSize', 20);
-                    obj.Z(3) = plot(obj.AxisAnimation, X_E, Y_E, '+', 'Color', ut.Colours(1,:), 'MarkerSize', 20);
+                    if two_pair_zone
+                        obj.Z(3) = plot(obj.AxisAnimation, X_E, Y_E, '+', 'Color', ut.Colours(1,:), 'MarkerSize', 20);
+                    end
 
                     betaStep = r(1)*obj.phi(1) ./ obj.rho_a;
                     tau_1 = 0:betaStep(1):2*eta(1)-betaStep(1);
@@ -671,6 +957,32 @@ classdef animationControl < handle
     end
 
     methods (Access = private)
+        function rebuildFrames(obj, ut, newLen)
+            % Rebuild the precomputed frame cache at the new length using
+            % the current obj.pinion / obj.wheel / obj.tooth.r geometry
+            % and the current obj.T / obj.phi transformation parameters.
+            % Called from plotAnimation (initial build) and from
+            % updateAnimationSetting (live FPS / speed change).
+            if ut.Mode.ValueIndex == 1
+                obj.frames_mesh = cell(2, newLen);
+                obj.frames_mesh{1,1} = obj.pinion;
+                obj.frames_mesh{2,1} = obj.wheel;
+                for j = 1:newLen-1
+                    obj.frames_mesh{1, j+1} = obj.T.p * obj.frames_mesh{1, j};
+                    obj.frames_mesh{2, j+1} = obj.T.w * obj.frames_mesh{2, j};
+                end
+                for j = 1:newLen
+                    obj.frames_mesh{2, j}(2,:) = obj.frames_mesh{2, j}(2,:) + obj.a_w;
+                end
+            else
+                obj.frames_hobbing = cell(1, newLen);
+                for j = 1:newLen
+                    obj.frames_hobbing{j} = obj.tooth.r + [(j-1)*obj.phi(1)*obj.d(1)/2; 0];
+                    obj.frames_hobbing{j} = obj.T_fun(obj.theta - (j-1)*obj.phi(1)) * obj.frames_hobbing{j};
+                end
+            end
+        end
+
         function K = buildWheel(obj, Z, WHEEL)
             % Replicate a single tooth Z times around the wheel centre.
             num = size(WHEEL, 2);

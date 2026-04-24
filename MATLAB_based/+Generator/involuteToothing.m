@@ -22,6 +22,15 @@ classdef involuteToothing
         rf_koef (1,1) double {mustBeNumeric, mustBePositive} = 0.38
         r_f;  h_a;  h_f;  R;  R_b;  R_a;  R_f
         Cs_lower;  Cs_upper
+
+        % Radius at which the active (working) involute flank begins.
+        % Equals the radius at the trochoid-involute intersection when the
+        % involute portion exists (x > x_lower), otherwise falls back to
+        % R_b (the geometrical involute base-circle limit). Used by the
+        % action-line calculation to account for undercut: when this
+        % radius exceeds R_b, contact cannot physically occur below it,
+        % which shortens the real path of contact.
+        R_active_start
     end
 
     properties (SetAccess = private)
@@ -139,6 +148,11 @@ classdef involuteToothing
                 t_inv_intersection = fminbnd(@intersectionPoint, t_inv_tip, 0);
                 t_tr_intersection = fzero(@(par) obj.Inv_R(t_inv_intersection) - obj.Tr2_R(par, obj.x), [t_tr_start t_tr_end]);
 
+                % Real lower limit of the active involute flank. When
+                % undercut is present this radius is larger than R_b and
+                % restricts the usable line of action accordingly.
+                obj.R_active_start = obj.Inv_R(t_inv_intersection);
+
                 t_involute = linspace(t_inv_intersection, t_inv_tip, obj.quality);
                 obj.involute = [obj.Inv_X(t_involute, obj.x); obj.Inv_Y(t_involute, obj.x)];
 
@@ -152,6 +166,12 @@ classdef involuteToothing
             else
                 t_tr_intersection = fzero(@(par) obj.R_a - obj.Tr2_R(par, obj.x), [t_tr_start obj.initial_guess]);
                 obj.involute = NaN;
+
+                % No active involute portion exists in this case; fall
+                % back to R_b so the action-line calculation behaves as
+                % it did before this feature was added.
+                obj.R_active_start = obj.R_b;
+
                 t_a_start = atan(obj.Tr2_X(t_tr_intersection, obj.x) ./ obj.Tr2_Y(t_tr_intersection, obj.x));
                 t_head = linspace(t_a_start, pi/obj.z, uint8(obj.quality/4));
                 obj.head = [obj.R_a*sin(t_head); obj.R_a*cos(t_head)];
