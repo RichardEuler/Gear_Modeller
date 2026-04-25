@@ -87,10 +87,10 @@ classdef ansysIntegrationUtils < handle
         function create(obj)
             % Build the dialog.  ansysLanguageFun fills all text at the end.
 
-            pointer = get(0,'PointerLocation'); pointer(2) = pointer(2) - 580;
+            pointer = get(0,'PointerLocation'); pointer(2) = pointer(2) - 520;
 
             obj.F = uifigure( ...
-                'Position', [pointer 450 580], ...
+                'Position', [pointer 520 480], ...
                 'Resize',  'off');
 
             if isprop(obj.AppRef, 'appFolder') && ...
@@ -429,7 +429,7 @@ classdef ansysIntegrationUtils < handle
             % Open a folder-selection dialog for the TVMS work folder.
             startPath = obj.WorkFolderEdit.Value;
             if isempty(startPath) || ~isfolder(startPath)
-                startPath = userpath;
+                startPath = tempdir;   % always writable; avoids userpath dependency
             end
             folder = uigetdir(startPath, 'Select TVMS work folder');
             if isequal(folder, 0), return; end  % user cancelled
