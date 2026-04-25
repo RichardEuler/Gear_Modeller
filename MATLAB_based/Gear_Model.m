@@ -655,7 +655,7 @@ classdef Gear_Model < handle
 
             app.ProfileGridLayout = uigridlayout(app.ProfileTab);
             app.ProfileGridLayout.ColumnWidth = {'1x'};
-            app.ProfileGridLayout.RowHeight   = {'1x', 192, 'fit', 'fit', 35};
+            app.ProfileGridLayout.RowHeight   = {'fit', 192, 'fit', 'fit', 35};
             app.ProfileGridLayout.RowSpacing  = 20;
             app.ProfileGridLayout.Padding     = [20 20 20 20];
             app.ProfileGridLayout.Scrollable  = 'on';
@@ -1174,7 +1174,7 @@ classdef Gear_Model < handle
 
             app.AnimationGridLayout = uigridlayout(app.AnimationTab);
             app.AnimationGridLayout.ColumnWidth     = {'1x'};
-            app.AnimationGridLayout.RowHeight       = {'1x', 20, 120, 195, 140, 35};
+            app.AnimationGridLayout.RowHeight       = {'fit', 20, 120, 195, 140, 35};
             app.AnimationGridLayout.RowSpacing      = 20;
             app.AnimationGridLayout.Padding         = [20 20 20 20];
             app.AnimationGridLayout.BackgroundColor = bgColor;
