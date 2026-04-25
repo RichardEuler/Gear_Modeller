@@ -30,28 +30,22 @@ classdef animationTabUtils < handle
             BC = [0.94 0.94 0.94];
 
             % ---- Upper area: descriptive text and mode selector ----
-            Grid1 = gobjects(2,1);
-            Grid1(1) = uigridlayout(app.AnimationGridLayout,'BackgroundColor',BC);
-            Grid1(1).Layout.Row = 1; Grid1(1).Layout.Column = 1;
-            Grid1(1).ColumnWidth = {'1x'}; Grid1(1).RowHeight = {'1x',20}; Grid1(1).Padding = [0 0 0 0];
-            set(Grid1(1),'RowSpacing',10,'ColumnSpacing',10);
-
-            obj.TabLabel = uilabel(Grid1(1)); obj.TabLabel.WordWrap = 1;
+            obj.TabLabel = uilabel(app.AnimationGridLayout); obj.TabLabel.WordWrap = 1;
             obj.TabLabel.Layout.Row = 1; obj.TabLabel.Layout.Column = 1;
             obj.TabLabel.VerticalAlignment = 'top';
 
-            Grid1(2) = uigridlayout(Grid1(1),'BackgroundColor',BC);
-            Grid1(2).Layout.Row = 2; Grid1(2).Layout.Column = 1;
-            Grid1(2).ColumnWidth = {'fit','fit','1x',100}; Grid1(2).RowHeight = {'1x'}; Grid1(2).Padding = [0 0 0 0];
-            set(Grid1(2),'RowSpacing',10,'ColumnSpacing',2);
+            Grid1 = uigridlayout(app.AnimationGridLayout,'BackgroundColor',BC);
+            Grid1.Layout.Row = 2; Grid1.Layout.Column = 1;
+            Grid1.ColumnWidth = {'fit','fit','1x',100}; Grid1.RowHeight = {'1x'}; Grid1.Padding = [0 0 0 0];
+            set(Grid1,'RowSpacing',10,'ColumnSpacing',2);
 
-            obj.ModeLabel = uilabel(Grid1(2)); obj.ModeLabel.Layout.Row = 1; obj.ModeLabel.Layout.Column = 1;
-            obj.Mode = uidropdown(Grid1(2)); obj.Mode.Layout.Row = 1; obj.Mode.Layout.Column = 2;
+            obj.ModeLabel = uilabel(Grid1); obj.ModeLabel.Layout.Row = 1; obj.ModeLabel.Layout.Column = 1;
+            obj.Mode = uidropdown(Grid1); obj.Mode.Layout.Row = 1; obj.Mode.Layout.Column = 2;
             obj.Mode.BackgroundColor = [1 1 1]; obj.Mode.ValueIndex = 1;
             obj.Mode.ValueChangedFcn = @(~,~) modeSwitcher(obj,app);
 
             % ---- ANSYS Integration Button ----
-            obj.AnsysButton                   = uibutton(Grid1(2), 'push');
+            obj.AnsysButton                   = uibutton(Grid1, 'push');
             obj.AnsysButton.Text              = 'ANSYS';
             obj.AnsysButton.FontWeight        = 'bold';
             obj.AnsysButton.BackgroundColor   = [1 1 1];

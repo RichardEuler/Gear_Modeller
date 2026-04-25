@@ -655,7 +655,7 @@ classdef Gear_Model < handle
 
             app.ProfileGridLayout = uigridlayout(app.ProfileTab);
             app.ProfileGridLayout.ColumnWidth = {'1x'};
-            app.ProfileGridLayout.RowHeight   = {50, 192, 'fit', '1x', 35};
+            app.ProfileGridLayout.RowHeight   = {'1x', 192, 'fit', 'fit', 35};
             app.ProfileGridLayout.RowSpacing  = 20;
             app.ProfileGridLayout.Padding     = [20 20 20 20];
             app.ProfileGridLayout.Scrollable  = 'on';
@@ -1174,29 +1174,30 @@ classdef Gear_Model < handle
 
             app.AnimationGridLayout = uigridlayout(app.AnimationTab);
             app.AnimationGridLayout.ColumnWidth     = {'1x'};
-            app.AnimationGridLayout.RowHeight       = {'1x', 120, 195, 140, 35};
+            app.AnimationGridLayout.RowHeight       = {'1x', 20, 120, 195, 140, 35};
             app.AnimationGridLayout.RowSpacing      = 20;
             app.AnimationGridLayout.Padding         = [20 20 20 20];
             app.AnimationGridLayout.BackgroundColor = bgColor;
+            app.AnimationGridLayout.Scrollable      = "on";
 
             % Export setting panel (row 4)
             app.ExportSettingPanel = uipanel(app.AnimationGridLayout);
             app.ExportSettingPanel.BackgroundColor = bgColor;
-            app.ExportSettingPanel.Layout.Row      = 4;
+            app.ExportSettingPanel.Layout.Row      = 5;
             app.ExportSettingPanel.Layout.Column   = 1;
             app.ExportSettingPanel.FontWeight      = 'bold';
 
             % Toothing setting panel (row 3)
             app.ToothingSettingPanel = uipanel(app.AnimationGridLayout);
             app.ToothingSettingPanel.BackgroundColor = bgColor;
-            app.ToothingSettingPanel.Layout.Row      = 3;
+            app.ToothingSettingPanel.Layout.Row      = 4;
             app.ToothingSettingPanel.Layout.Column   = 1;
             app.ToothingSettingPanel.FontWeight      = 'bold';
 
             % Animation setting panel (row 2)
             app.AnimationSettingPanel = uipanel(app.AnimationGridLayout);
             app.AnimationSettingPanel.BackgroundColor = bgColor;
-            app.AnimationSettingPanel.Layout.Row      = 2;
+            app.AnimationSettingPanel.Layout.Row      = 3;
             app.AnimationSettingPanel.Layout.Column   = 1;
             app.AnimationSettingPanel.FontWeight      = 'bold';
 
@@ -1227,7 +1228,7 @@ classdef Gear_Model < handle
             app.DisplayButtonsGridLayout.ColumnWidth     = {'1x', '1x', '1x'};
             app.DisplayButtonsGridLayout.RowHeight       = {'1x'};
             app.DisplayButtonsGridLayout.Padding         = [0 0 0 0];
-            app.DisplayButtonsGridLayout.Layout.Row      = 5;
+            app.DisplayButtonsGridLayout.Layout.Row      = 6;
             app.DisplayButtonsGridLayout.Layout.Column   = 1;
             app.DisplayButtonsGridLayout.BackgroundColor = bgColor;
 
