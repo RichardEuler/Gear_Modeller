@@ -377,6 +377,10 @@ classdef animationControl < handle
 
             obj.t_p = 1 / obj.FPS;
             plotAnimation(obj, ut, app);
+
+            % Notify the ANSYS dialog (if open) that gear-mesh data is now
+            % available — or was just cleared/replaced.
+            syncAnsysLaunchButton(app);
         end
 
         function plotAnimation(obj, ut, app)
@@ -473,9 +477,11 @@ classdef animationControl < handle
             if obj.start_state == 1
                 app.AnimationExport.ExportButton.Enable = 'off';
                 app.StartPauseButton.Text = itemsCellArray{2};  % "Pause"
+                syncAnsysLaunchButton(app);    % disable while running
             else
                 app.AnimationExport.ExportButton.Enable = 'on';
                 app.StartPauseButton.Text = itemsCellArray{1};  % "Play"
+                syncAnsysLaunchButton(app);    % re-evaluate on pause
                 return
             end
 
@@ -652,6 +658,9 @@ classdef animationControl < handle
             if isvalid(app.AnimationExport.ExportButton)
                 app.AnimationExport.ExportButton.Enable = 'on';
             end
+
+            % Re-evaluate the ANSYS launch button now that animation stopped.
+            syncAnsysLaunchButton(app);
 
             % Reset the live FPS readout — the animation is not running.
             if ~isempty(obj.FPSMenu) && isvalid(obj.FPSMenu)
@@ -1091,5 +1100,16 @@ function colour = getPointColour(app)
         colour = 'k.';
     else
         colour = 'w.';
+    end
+end
+
+function syncAnsysLaunchButton(app)
+    % Forward the sync call to the ANSYS dialog if it is currently open.
+    % Safe to call unconditionally — guards against a closed or never-opened
+    % dialog without any special-casing at each call site.
+    dlg = app.AnimationTabUtils.AnsysDialog;
+    if ~isempty(dlg) && isvalid(dlg) && ...
+       isgraphics(dlg.F) && isvalid(dlg.F)
+        dlg.syncLaunchButton();
     end
 end

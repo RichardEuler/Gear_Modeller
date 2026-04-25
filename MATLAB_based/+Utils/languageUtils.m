@@ -85,6 +85,12 @@ classdef languageUtils < handle
             app.HomeUtils.HomeLabel(1).Text = obj.HomeTabTextFile;
             Utils.LanguageSubUtils.profileTabLanguageFun(app, obj.ProfileTabTextFile);
             Utils.LanguageSubUtils.animationTabLanguageFun(app, obj.AnimationTabTextFile);
+
+            if ~isempty(app.AnimationTabUtils.AnsysDialog) && ...
+                    isvalid(app.AnimationTabUtils.AnsysDialog) && ...
+                    isgraphics(app.AnimationTabUtils.AnsysDialog.F)
+                Utils.LanguageSubUtils.ansysLanguageFun(app.AnimationTabUtils.AnsysDialog);
+            end
         end
     end
 end

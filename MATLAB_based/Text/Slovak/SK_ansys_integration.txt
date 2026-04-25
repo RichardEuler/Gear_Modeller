@@ -1,0 +1,33 @@
+Integrácia ANSYS
+TVMS
+Typ modelu
+Bezkontaktný
+Kontaktný
+Teleso ozubeného kolesa
+Plné
+Duté
+Priemer otvoru pastorka:
+Priemer otvoru kolesa:
+Šírka ozubenia:
+Uhlové kroky/cyklus záberu:
+Aplikovaný krútiaci moment:
+Youngov modul pružnosti:
+Poissonovo číslo:
+Veľkosť siete v zaoblení:
+Cesta k RunWB2.exe:
+Pracovný priečinok:
+SPUSTIŤ
+Pripravené.
+Kontaktný model zatiaľ nie je implementovaný — nebola vykonaná žiadna akcia.
+Príprava pracovného priečinka...
+Získavanie parametrov ozubeného kolesa...
+Zápis súborov bodov profilu...
+Výpočet pozícií záberu...
+Zápis skriptu SpaceClaim...
+Zápis skriptu Mechanical...
+Zápis súboru žurnálu Workbench...
+Spúšťanie ANSYS Workbench...
+Spustené. Výsledky:
+CHYBA:
+Zadajte cestu k RunWB2.exe...
+Zadajte pracovný priečinok...

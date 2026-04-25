@@ -1,0 +1,33 @@
+ANSYS Integration
+TVMS
+Type of model
+Contactless
+Contact
+Gear body
+Full
+Hollow
+Pinion hole diameter:
+Wheel hole diameter:
+Gear width:
+Angular steps/mesh cycle:
+Applied torque:
+Young's modulus:
+Poisson's ratio:
+Fillet mesh size:
+RunWB2.exe path:
+Work folder:
+LAUNCH
+Ready.
+Contact model not yet implemented — no action taken.
+Preparing work folder...
+Collecting gear parameters...
+Writing profile point files...
+Computing mesh positions...
+Writing SpaceClaim script...
+Writing Mechanical script...
+Writing Workbench journal...
+Launching ANSYS Workbench...
+Launched. Results:
+ERROR:
+Select RunWB2.exe...
+Select work folder...

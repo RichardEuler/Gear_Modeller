@@ -206,6 +206,10 @@ classdef Gear_Model < handle
                 delete(findobj(app.AnimationControl.AxisAnimation, 'Type', 'line'));
                 delete(findobj(app.AnimationControl.AxisAnimation, 'Type', 'patch'));
             end
+
+            % Gear-mesh content is gone — disable the ANSYS launch button.
+            app.AnimationTabUtils.AnsysLauchState = 0;
+            syncAnsysLaunchButton(app);
         end
     end
 
@@ -327,6 +331,7 @@ classdef Gear_Model < handle
                 if ~isempty(app.HypocycloidRadiusEditField.To.Value)
                     app.HypocycloidRadiusEditField.From.Limits(2) = app.HypocycloidRadiusEditField.To.Value;
                 end
+
             end
         end
 
@@ -404,17 +409,13 @@ classdef Gear_Model < handle
         function DrawProfileButtonPushed(app, ~)
             % Generate and draw the tooth profile with current settings
             Utils.ProfileTab.drawFunction(app);
+            % Profile-Tab content is now in the Output Figure — disable ANSYS.
+            app.AnimationTabUtils.AnsysLauchState = 0;
+            syncAnsysLaunchButton(app);
         end
 
         function CancelProfileButtonPushed(app, ~)
-            % Remove the most recently drawn profile
-
-            % If animation axes are visible, clear any leftover line objects
-            if ~isempty(app.AnimationControl.AxisAnimation) && ...
-                    isvalid(app.AnimationControl.AxisAnimation) && ...
-                    strcmp(app.AnimationControl.AxisAnimation.Visible, 'on')
-                delete(findobj(app.AxisOutput, 'Type', 'Line'));
-            end
+            % Remove the most recently drawn profile.
 
             if app.ProfileTabManagerUtils.ProfileCounter > 0
                 if isvalid(app.ProfileTabManagerUtils.ProfilePlot(app.ProfileTabManagerUtils.ProfileCounter))
@@ -429,7 +430,6 @@ classdef Gear_Model < handle
                 end
                 app.ProfileTabManagerUtils.ProfileCounter = app.ProfileTabManagerUtils.ProfileCounter - 1;
 
-                % Update export spinner range
                 if app.ProfileTabManagerUtils.ProfileCounter == 0
                     app.ExportUtils.ExportSpinner.Limits = [0 0];
                 else
@@ -438,19 +438,32 @@ classdef Gear_Model < handle
                 app.ExportUtils.ExportSpinner.Value = double(app.ProfileTabManagerUtils.ProfileCounter);
             end
 
-            % If no profiles remain, hide axes and disable export
+            % When all profiles are gone, fully clear the Output Figure.
+            % Mirrors CancelAllFun exactly so both cancel buttons leave the
+            % app in the same state regardless of what was on screen
+            % (profile plot, gear mesh, or gear generator output).
             if app.ProfileTabManagerUtils.ProfileCounter == 0
                 set(app.AxisOutput, 'Visible', 'off', 'HandleVisibility', 'off');
                 app.HomeUtils.FigureText.Visible = 'on';
                 app.ExportUtils.ExportSpinner.Limits = [0 0];
                 app.ExportUtils.ExportSpinner.Value  = 0;
                 app.ExportUtils.ExportButton.Enable  = 0;
+
+                % Clear the animation axes too — this was the missing piece
+                % that caused gear-mesh content to survive a single-cancel.
+                app.AnimationControl.start_state = 0;
+                app.AnimationExport.video_export_state = 0;
+                if ~isempty(app.AnimationControl.AxisAnimation) && ...
+                        isvalid(app.AnimationControl.AxisAnimation)
+                    app.AnimationControl.AxisAnimation.Visible = 'off';
+                    delete(findobj(app.AnimationControl.AxisAnimation, 'Type', 'line'));
+                    delete(findobj(app.AnimationControl.AxisAnimation, 'Type', 'patch'));
+                end
             end
 
-            % Remove animation patches if present
-            if ~isempty(app.AnimationControl.AxisAnimation) && isvalid(app.AnimationControl.AxisAnimation)
-                delete(findobj(app.AnimationControl.AxisAnimation, 'Type', 'patch'));
-            end
+            % Sync the ANSYS launch button regardless of how many profiles remain.
+            app.AnimationTabUtils.AnsysLauchState = 0;
+            syncAnsysLaunchButton(app);
         end
 
         function CancelAllProfilesButtonPushed(app, ~)
@@ -557,11 +570,40 @@ classdef Gear_Model < handle
                 app.AnimationControl.AxisAnimation.Visible = 'on';
             end
             displayFun(app.AnimationControl, app);
+            % Gear mesh is now on screen — enable ANSYS only in meshing mode.
+            if app.AnimationTabUtils.Mode.ValueIndex == 1
+                app.AnimationTabUtils.AnsysLauchState = 1;
+            else
+                app.AnimationTabUtils.AnsysLauchState = 0;
+            end
+            syncAnsysLaunchButton(app);
         end
 
         function StartPauseButtonPushed(app, ~)
-            % Start or pause the running animation
+            % Start or pause the running animation.
+            % Directly disable the ANSYS launch button before entering the
+            % blocking animation loop, then sync when the loop returns
+            % (i.e. when the animation is paused or finished).
+            dlg = app.AnimationTabUtils.AnsysDialog;
+            if ~isempty(dlg) && isvalid(dlg) && isgraphics(dlg.F) && isvalid(dlg.F)
+                dlg.LaunchButton.Enable = 'off';
+            end
             startAnimation(app.AnimationControl, app);
+            % Loop has exited — re-evaluate based on AnsysLaunchState.
+            syncAnsysLaunchButton(app);
+        end
+
+        function syncAnsysLaunchButton(app)
+            % Forward the sync call to the ANSYS dialog if it is open.
+            % Called from every action that changes the output-figure content
+            % or the animation running-state.  All enable/disable logic lives
+            % in ansysIntegrationUtils.syncLaunchButton() — this is just the
+            % routing shim that keeps Gear_Model ignorant of dialog internals.
+            dlg = app.AnimationTabUtils.AnsysDialog;
+            if ~isempty(dlg) && isvalid(dlg) && ...
+               isgraphics(dlg.F) && isvalid(dlg.F)
+                dlg.syncLaunchButton();
+            end
         end
     end
 
@@ -894,16 +936,16 @@ classdef Gear_Model < handle
 
             app.DisplaySettingsGrid = uigridlayout(app.DisplaySettingsPanel);
             app.DisplaySettingsGrid.ColumnWidth     = {'1x'};
-            app.DisplaySettingsGrid.RowHeight       = {40, 20, 50};
+            app.DisplaySettingsGrid.RowHeight       = {45, 20, 50};
             app.DisplaySettingsGrid.RowSpacing      = 20;
             app.DisplaySettingsGrid.BackgroundColor = bgColor;
 
             % --- Row 1: Generation mode ---
             app.GenerationModeGrid = uigridlayout(app.DisplaySettingsGrid);
-            app.GenerationModeGrid.ColumnWidth     = {122, 195, '1x'};
+            app.GenerationModeGrid.ColumnWidth     = {122, '1x', 'fit'};
             app.GenerationModeGrid.RowHeight       = {20, 20};
             app.GenerationModeGrid.ColumnSpacing   = 5;
-            app.GenerationModeGrid.RowSpacing      = 0;
+            app.GenerationModeGrid.RowSpacing      = 5;
             app.GenerationModeGrid.Padding         = [0 0 0 0];
             app.GenerationModeGrid.Layout.Row      = 1;
             app.GenerationModeGrid.Layout.Column   = 1;
@@ -916,6 +958,7 @@ classdef Gear_Model < handle
             % Profile count sub-grid
             app.ProfileCountGrid = uigridlayout(app.GenerationModeGrid);
             app.ProfileCountGrid.RowHeight       = {'1x'};
+            app.ProfileCountGrid.ColumnWidth     = {'fit', 60};
             app.ProfileCountGrid.ColumnSpacing   = 5;
             app.ProfileCountGrid.RowSpacing      = 0;
             app.ProfileCountGrid.Padding         = [0 0 0 0];

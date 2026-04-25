@@ -15,6 +15,11 @@ classdef animationTabUtils < handle
         ToothingLabels2;  ToothingSymbolLabels2;  MeshingChoices;  ValueEdit2
 
         Transparency (1,1) double = 1
+        
+        % ANSYS link
+        AnsysButton matlab.ui.control.Button
+        AnsysDialog                           % cached ansysIntegrationUtils handle
+        AnsysLauchState (1,1) double = 0
     end
 
     methods
@@ -37,13 +42,25 @@ classdef animationTabUtils < handle
 
             Grid1(2) = uigridlayout(Grid1(1),'BackgroundColor',BC);
             Grid1(2).Layout.Row = 2; Grid1(2).Layout.Column = 1;
-            Grid1(2).ColumnWidth = {'fit','fit','1x'}; Grid1(2).RowHeight = {'1x'}; Grid1(2).Padding = [0 0 0 0];
+            Grid1(2).ColumnWidth = {'fit','fit','1x',100}; Grid1(2).RowHeight = {'1x'}; Grid1(2).Padding = [0 0 0 0];
             set(Grid1(2),'RowSpacing',10,'ColumnSpacing',2);
 
             obj.ModeLabel = uilabel(Grid1(2)); obj.ModeLabel.Layout.Row = 1; obj.ModeLabel.Layout.Column = 1;
             obj.Mode = uidropdown(Grid1(2)); obj.Mode.Layout.Row = 1; obj.Mode.Layout.Column = 2;
             obj.Mode.BackgroundColor = [1 1 1]; obj.Mode.ValueIndex = 1;
             obj.Mode.ValueChangedFcn = @(~,~) modeSwitcher(obj,app);
+
+            % ---- ANSYS Integration Button ----
+            obj.AnsysButton                   = uibutton(Grid1(2), 'push');
+            obj.AnsysButton.Text              = 'ANSYS';
+            obj.AnsysButton.FontWeight        = 'bold';
+            obj.AnsysButton.BackgroundColor   = [1 1 1];
+            obj.AnsysButton.Layout.Row        = 1;
+            obj.AnsysButton.Layout.Column     = 4;
+            obj.AnsysButton.ButtonPushedFcn   = @(~,~) AnsysButtonPushed(obj, app);
+            % The Mode dropdown defaults to ValueIndex == 1 (gear meshing),
+            % so the button starts enabled; modeSwitcher keeps it in sync.
+            obj.AnsysButton.Enable            = 'on';
 
             % ---- Animation Settings Panel ----
             Grid2 = gobjects(5,1);
@@ -150,7 +167,7 @@ classdef animationTabUtils < handle
 
             function toggleGraphicalAdditions(a)
                 if ~isempty(a.GraphicalAdditions.F) && isgraphics(a.GraphicalAdditions.F)
-                    close(a.GraphicalAdditions.F);
+                    figure(a.GraphicalAdditions.F); % bring existing window to front
                 else
                     create(a.GraphicalAdditions, a);
                 end
@@ -181,7 +198,7 @@ classdef animationTabUtils < handle
 
             function toggleParams(a)
                 if ~isempty(a.AnimationParameters.F) && isgraphics(a.AnimationParameters.F)
-                    delete(a.AnimationParameters.F);
+                    figure(a.AnimationParameters.F); % bring existing window to front
                 else
                     create(a.AnimationParameters, a.AnimationControl, a);
                 end
@@ -294,9 +311,42 @@ classdef animationTabUtils < handle
             updateAnimationSetting(app.AnimationControl, app.AnimationTabUtils);
             if obj.Mode.ValueIndex == 1
                 gearMeshing(obj, app);
+                obj.AnsysButton.Enable = 'on';
             else
                 hobbingProcess(obj, app);
+                obj.AnsysButton.Enable = 'off';
+                % Hobbing mode: gear mesh is gone from screen.
+                obj.AnsysLauchState = 0;
+                % Close the ANSYS dialog if it was left open in meshing mode.
+                if ~isempty(obj.AnsysDialog) && isvalid(obj.AnsysDialog) && ...
+                        isgraphics(obj.AnsysDialog.F) && isvalid(obj.AnsysDialog.F)
+                    delete(obj.AnsysDialog.F);
+                end
             end
+            % Sync the launch button for the new mode.
+            if ~isempty(obj.AnsysDialog) && isvalid(obj.AnsysDialog) && ...
+                    isgraphics(obj.AnsysDialog.F) && isvalid(obj.AnsysDialog.F)
+                obj.AnsysDialog.syncLaunchButton();
+            end
+        end
+
+        function AnsysButtonPushed(obj, app)
+            % Open (or reuse) the ANSYS integration dialog.
+            % The dialog is cached on this tab so repeated clicks focus the
+            % existing window instead of spawning duplicates. If the user
+            % closed it, we rebuild on next click.
+            if isempty(obj.AnsysDialog) || ...
+                    ~isvalid(obj.AnsysDialog) || ...
+                    ~isgraphics(obj.AnsysDialog.F) || ...
+                    ~isvalid(obj.AnsysDialog.F)
+                obj.AnsysDialog = Utils.ansysIntegrationUtils(app);
+                obj.AnsysDialog.create();
+            else
+                figure(obj.AnsysDialog.F);  % bring existing window to front
+            end
+            % Always sync the launch button on open/focus so it reflects
+            % whatever has changed since the dialog was last seen.
+            obj.AnsysDialog.syncLaunchButton();
         end
 
         function gearMeshing(obj, app)

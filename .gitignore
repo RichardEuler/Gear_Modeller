@@ -18,6 +18,9 @@ deploymentLog.html
 slprj/
 *.slxc
 
+# OTHER MATLAB FILES
+**/deploymentLog.html
+
 # ========================
 # Project Specific Logs/Data
 # ========================
